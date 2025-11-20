@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ABM MAHI Display</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #000;
+            font-family: Arial, sans-serif;
+            cursor: none;
+        }
+        
+        .name {
+            position: absolute;
+            font-weight: bold;
+            font-size: 24px;
+            pointer-events: none;
+            user-select: none;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.5s ease-out;
+            white-space: nowrap;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <script>
+        // Array of bright and vibrant colors
+        const colors = [
+            '#FF355E', '#FD5B78', '#FF6037', '#FF9966', '#FF9933',
+            '#FFCC33', '#FFFF66', '#CCFF00', '#66FF66', '#AAF0D1',
+            '#50BFE6', '#FF6EFF', '#EE34D2', '#FF00CC', '#FF3855',
+            '#FF5470', '#FF7A00', '#FF9F00', '#FAFA37', '#BFFF00',
+            '#39FF14', '#00FF99', '#00FFFF', '#0FDDAF', '#0048BA',
+            '#6F00FF', '#BF00FF', '#D891EF', '#C32148', '#FF033E'
+        ];
+
+        // Function to generate a random number within a range
+        function random(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        // Function to create a name element
+        function createName() {
+            const name = document.createElement('div');
+            name.className = 'name';
+            name.textContent = 'ABM MAHI';
+            name.style.color = colors[random(0, colors.length - 1)];
+            name.style.fontSize = random(20, 50) + 'px';
+            name.style.left = random(0, window.innerWidth - 150) + 'px';
+            name.style.top = random(0, window.innerHeight - 50) + 'px';
+            name.style.opacity = '0';
+            name.style.transform = `rotate(${random(-15, 15)}deg)`;
+            
+            document.body.appendChild(name);
+            
+            // Trigger fade in animation
+            setTimeout(() => {
+                name.style.opacity = '1';
+            }, 10);
+            
+            return name;
+        }
+
+        // Function to check if the screen is filled
+        function isScreenFilled() {
+            const names = document.querySelectorAll('.name');
+            if (names.length < 50) return false; // Not enough elements to fill screen
+            
+            // Check if there are any large empty spaces
+            // This is a simplified check - in a real implementation you might need a more complex algorithm
+            return names.length > 200; // Arbitrary limit that works for most screens
+        }
+
+        // Main function to generate names
+        function generateNames() {
+            if (!isScreenFilled()) {
+                createName();
+                setTimeout(generateNames, random(10, 100)); // Adjust timing for faster/slower filling
+            } else {
+                // Keep adding but at a slower rate
+                setTimeout(generateNames, 500);
+                
+                // Occasionally remove some elements to prevent browser slowdown
+                if (document.querySelectorAll('.name').length > 300) {
+                    const names = document.querySelectorAll('.name');
+                    if (names.length > 0) {
+                        document.body.removeChild(names[0]);
+                    }
+                }
+            }
+        }
+
+        // Start the name generation when the page loads
+        window.onload = function() {
+            generateNames();
+        };
+
+        // Adjust for window resize
+        window.onresize = function() {
+            // Remove some names to allow more filling
+            const names = document.querySelectorAll('.name');
+            if (names.length > 100) {
+                for (let i = 0; i < 20; i++) {
+                    if (names[i]) {
+                        document.body.removeChild(names[i]);
+                    }
+                }
+            }
+        };
+    </script>
+</body>
+</html>
